@@ -19,7 +19,10 @@ public interface StudentRepository {
 
   //@Select("SELECT course_id, student_id, course_name, course_start, course_end FROM student_courses")
   //List<StudentCourse> searchSC();
-  @Select("SELECT course_id, student_id, course_name, DATE_FORMAT(course_start,'%Y-%m-%d %H:%i:%s') AS courseStart, DATE_FORMAT(DATE_ADD(course_start, INTERVAL 3 MONTH),'%Y-%m-%d %H:%i:%s') AS courseEnd FROM student_courses")
+  @Select("SELECT course_id, student_id, course_name, " +
+      "course_start AS courseStart, " +
+      "DATE_ADD(course_start, INTERVAL 3 MONTH) AS courseEnd " +
+      "FROM student_courses")
   List<StudentCourse> searchSC();
 
 
