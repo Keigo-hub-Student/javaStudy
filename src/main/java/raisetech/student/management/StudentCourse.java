@@ -1,6 +1,9 @@
+
+
 package raisetech.student.management;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.time.LocalDateTime;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 
 import lombok.Getter;
@@ -16,8 +19,9 @@ public class StudentCourse{
   private String courseId;
   private String studentId;
   private String courseName;
-  private String courseStart;
-  private String courseEnd;
-
+  private LocalDateTime courseStart;
+  private LocalDateTime courseEnd;
+  //private String courseStart;
+  //private String courseEnd;
 
 }

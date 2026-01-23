@@ -1,23 +1,27 @@
+
 package raisetech.student.management;
 
-public class Student {
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@JsonPropertyOrder({"id", "name", "kanaName", "nickName", "email","area","age","sex"})
+
+
+public class Student{
+
+  private String id;
   private String name;
+  private String kanaName;
+  private String nickName;
+  private String email;
+  private String area;
   private int age;
+  private String sex;
 
 
-  public int getAge() {
-    return age;
-  }
-
-  public void setAge(int age) {
-    this.age = age;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 }
