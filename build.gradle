@@ -1,3 +1,4 @@
+
 plugins {
 	id 'java'
 	id 'war'
@@ -11,8 +12,13 @@ description = 'StudentManagementSystem'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(17)
 	}
+}
+configurations{
+    compileOnly{
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
@@ -21,11 +27,30 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat-runtime'
+    // JDBC 自動構成
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    //便利機能、ユーティリティ
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+
+    //Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    //MySQLドライバ
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    //Mybatis
+    implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:4.0.0"
+
+
+    // Tomcat（war 用）
+    //providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat-runtime'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
-
-tasks.named('test') {
+ tasks.named('test') {
 	useJUnitPlatform()
 }
