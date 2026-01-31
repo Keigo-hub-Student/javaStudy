@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>受講生一覧</title>
+</head>
+<body>
+
+<h1>受講生一覧</h1>
+
+<form th:action="@{/studentList}" method="post">
+<table border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>名前</th>
+    <th>カナ名</th>
+    <th>ニックネーム</th>
+    <th>メールアドレス</th>
+    <th>地域</th>
+    <th>年齢</th>
+    <th>性別</th>
+    <th>備考</th>
+    <th>キャンセル</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="studentDetail : ${studentList}">
+    <td th:text="${studentDetail.student.id}">00001</td>
+    <td>
+      <a href="/studentList" th:href="@{/student/{id}(id=${studentDetail.student.id})}"
+         th:text="${studentDetail.student.name}">田中太郎</a>
+    </td>
+    <td th:text="${studentDetail.student.kanaName}">たなかたろう</td>
+    <td th:text="${studentDetail.student.nickName}">タナタロ</td>
+    <td th:text="${studentDetail.student.email}">ttttttt@gmail.com</td>
+    <td th:text="${studentDetail.student.area}">東京都港区</td>
+    <td th:text="${studentDetail.student.age}">23</td>
+    <td th:text="${studentDetail.student.sex}">男</td>
+    <td th:text="${studentDetail.student.remark}">特になし</td>
+    <td>
+      <input type="checkbox" th:checked="${studentDetail.student.isDeleted}"/>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<button type="submit">選択した生徒を削除</button>
+</form>
+</body>
+</html>
