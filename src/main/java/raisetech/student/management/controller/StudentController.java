@@ -41,26 +41,6 @@ public class StudentController {
   }
 
 
-  @GetMapping("/newStudent")
-  public String newStudent(Model model){
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudentCourse(Arrays.asList(new StudentCourse()));
-    model.addAttribute("studentDetail",studentDetail);
-    return "registerStudent";
-  }
-
-  @PostMapping("/registerStudent")
-  public String registerStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result){
-    if(result.hasErrors()) {
-      return "registerStudent";
-    }
-    //新規受講生情報を登録する処理を実装する
-    service.registerStudent(studentDetail);
-    //コース情報も一緒に登録できるように実装する。コースは単体でいい。
-    return "redirect:/studentsList";
-  }
-
-
   @PostMapping("/updateStudent")
   public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail){
     System.out.println(studentDetail);
