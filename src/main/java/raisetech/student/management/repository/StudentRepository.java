@@ -10,21 +10,45 @@ import org.apache.ibatis.annotations.Update;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
 
+
+/**
+ * 受講生テーブルと受講生コース情報テーブルと紐づくリポジトリです。
+ */
 @Mapper
 public interface StudentRepository {
 
+
+  /**
+   * 受講生の全件検索を行います。
+   * @return 受講生一覧（全件）
+   */
   @Select("SELECT id,name,kana_name,nick_name,email,area,age, sex,remark,is_deleted FROM students")
   List<Student> search();
 
+  /**
+   * 受講生検索を行います。
+   *
+   * @param id 受講生ID
+   * @return 受講生
+   */
   @Select("SELECT * FROM students WHERE id = #{id}")
   Student searchStudent(String id);
 
+  /**
+   * 受講生のコース情報の全件検索を行います。
+   * @return 受講生のコース情報（全件）
+   */
   @Select("SELECT id, student_id, course_name, " +
       "course_start AS courseStart, " +
       "DATE_ADD(course_start, INTERVAL 3 MONTH) AS courseEnd " +
       "FROM student_courses")
   List<StudentCourse> searchSC();
 
+  /**
+   * 受講生IDに紐づく受講生コース情報を検索します。
+   * @param id 受講生ID
+   * @return 受講生IDni紐づく受講生コース情報。
+   */
   @Select("SELECT * FROM student_courses WHERE student_id = #{studentId}")
   List<StudentCourse> searchStudentCourse(String id);
 
@@ -47,17 +71,5 @@ public interface StudentRepository {
 
   @Update("UPDATE student_courses SET course_name =#{courseName} WHERE id = #{id}")
   void updateStudentCourse(StudentCourse studentCourse);
-
-  //生徒情報の論理削除
-  /*
-  @Update("UPDATE students SET is_deleted = true WHERE id = #{id}")
-  void logicalDeleteStudent(String id);*/
-
-  //@Update("UPDATE student_courses SET course_name =#{courseName} WHERE id = #{id}")
-  //void logicalDeleteStudentCourse(StudentCourse studentCourse);
-
-
-
-
 
 }
