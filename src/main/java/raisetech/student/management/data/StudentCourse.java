@@ -13,7 +13,7 @@ import lombok.Setter;
 @JsonPropertyOrder({"courseId", "studentId", "courseName", "courseStart", "courseEnd"})
 
 
-public class StudentCourse{
+public class StudentCourse {
 
   private String id;
   private String studentId;
