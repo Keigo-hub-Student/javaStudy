@@ -29,6 +29,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     //Thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    //Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    //便利機能、ユーティリティ
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // JDBC 自動構成

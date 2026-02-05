@@ -3,8 +3,12 @@ package raisetech.student.management.data;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.validation.annotation.Validated;
 
 @Getter
 @Setter
@@ -12,6 +16,7 @@ import lombok.Setter;
 
 
 public class Student{
+
   private String id;
   private String name;
   private String kanaName;
