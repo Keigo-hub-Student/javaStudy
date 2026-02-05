@@ -99,6 +99,16 @@ public class StudentService {
   }
 
 
+  /**
+   * 受講生の物理削除処理をします。
+   * @param id 削除する受講生のID
+   */
+  @Transactional
+  public void deleteStudent(int id){
+    repository.deleteStudent(id);
+  }
+
+
 
 
 
