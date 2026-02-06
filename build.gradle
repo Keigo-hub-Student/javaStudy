@@ -31,6 +31,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     //Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //OpenAPI Generator
+    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:3.0.1"
+
+
     //便利機能、ユーティリティ
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 

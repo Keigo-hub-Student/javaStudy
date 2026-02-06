@@ -2,11 +2,8 @@
 package raisetech.student.management.repository;
 
 import java.util.List;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.Param;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
 
@@ -36,11 +33,6 @@ public interface StudentRepository {
    * 受講生のコース情報の全件検索を行います。
    * @return 受講生のコース情報（全件）
    */
-  /*
-  @Select("SELECT id, student_id, course_name, " +
-      "course_start AS courseStart, " +
-      "DATE_ADD(course_start, INTERVAL 3 MONTH) AS courseEnd " +
-      "FROM student_courses")*/
   List<StudentCourse> searchStudentCourseList();
 
   /**
@@ -48,7 +40,6 @@ public interface StudentRepository {
    * @param studentId 受講生ID
    * @return 受講生IDni紐づく受講生コース情報。
    */
-  //@Select("SELECT * FROM student_courses WHERE student_id = #{studentId}")
   List<StudentCourse> searchStudentCourse(String studentId);
 
   /**
@@ -56,10 +47,6 @@ public interface StudentRepository {
    *
    * @param student 受講生
    */
-  /*
-  @Insert("INSERT INTO students(name,kana_name,nick_Name,email,area,age,sex,remark,is_Deleted)"
-      +"VALUES(#{name},#{kanaName},#{nickName},#{email},#{area},#{age},#{sex},#{remark},false)")
-  @Options(useGeneratedKeys = true,keyProperty = "id")*/
   void registerStudent(Student student);
 
 
@@ -68,9 +55,6 @@ public interface StudentRepository {
    *
    * @param studentCourse 受講生コース情報
    */
-  /*@Insert("INSERT INTO student_courses(student_id,course_name,course_start,course_end)"
-      +"VALUES(#{studentId},#{courseName},#{courseStart},#{courseEnd})")
-  @Options(useGeneratedKeys = true,keyProperty = "id")*/
   void registerStudentCourse(StudentCourse studentCourse);
 
   /**
@@ -78,8 +62,6 @@ public interface StudentRepository {
    *
    * @param student 受講生
    */
-  /*@Update("UPDATE students SET name = #{name},kana_name = #{kanaName},nick_name = #{nickName},"
-      + " email = #{email},area = #{area},age = #{age},sex = #{sex},remark = #{remark},is_deleted = #{isDeleted} WHERE id = #{id}")*/
   void updateStudent(Student student);
 
   /**
@@ -87,7 +69,12 @@ public interface StudentRepository {
    *
    * @param studentCourse 受講生コース情報
    */
-  //@Update("UPDATE student_courses SET course_name =#{courseName} WHERE id = #{id}")
   void updateStudentCourse(StudentCourse studentCourse);
+
+  /**
+   * 受講生の物理削除処理をします。
+   * @param id 削除する受講生のID
+   */
+  void deleteStudent(@Param("id") int id);
 
 }
