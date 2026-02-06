@@ -2,7 +2,6 @@
 package raisetech.student.management.repository;
 
 import java.util.List;
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import raisetech.student.management.data.Student;
@@ -76,7 +75,6 @@ public interface StudentRepository {
    * 受講生の物理削除処理をします。
    * @param id 削除する受講生のID
    */
-  @Delete("DELETE FROM students WHERE id = #{id}")
   void deleteStudent(@Param("id") int id);
 
 }

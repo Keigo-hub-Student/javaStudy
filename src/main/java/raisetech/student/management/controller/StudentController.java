@@ -5,11 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +41,7 @@ public class StudentController {
    */
   @GetMapping("/studentsList")
   public List<StudentDetail> getStudentList() throws TestException {
-    throw new TestException("nullが発生しました。");
+    throw new TestException("例外が発生しました。");
     //return service.searchStudentList();
   }
 
@@ -98,11 +96,11 @@ public class StudentController {
     service.deleteStudent(id);
     return ResponseEntity.noContent().build();
   }
-
+  /*
   @ExceptionHandler(TestException.class)
   public ResponseEntity<String> handleTestException(TestException ex){
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-  }
+  }*/
 
 
 }

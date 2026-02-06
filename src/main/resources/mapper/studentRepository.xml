@@ -99,6 +99,10 @@
     WHERE id = #{id}
   </update>
 
+  <!-- 受講生の物理削除 -->
+  <delete id="deleteStudent">
+    DELETE FROM students WHERE id = #{id}
+  </delete>
 
 
 </mapper>
