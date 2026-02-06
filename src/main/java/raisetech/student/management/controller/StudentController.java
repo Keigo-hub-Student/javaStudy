@@ -1,5 +1,6 @@
 package raisetech.student.management.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -39,7 +40,8 @@ public class StudentController {
    * 全権検索を行うので、条件指定は行いません。
    * @return 受講生一覧（全件）
    */
-  @GetMapping("/studentsList")
+  @Operation(summary = "一覧検索", description = "受講生の一覧を検索します。")
+  @GetMapping("/students")
   public List<StudentDetail> getStudentList() throws TestException {
     throw new TestException("例外が発生しました。");
     //return service.searchStudentList();
@@ -52,7 +54,7 @@ public class StudentController {
    * @param id　受講生ID
    * @return 受講生詳細
    */
-  @GetMapping("student/{id}")
+  @GetMapping("students/{id}")
   public StudentDetail getStudent(
       @PathVariable @NotBlank @Pattern(regexp = "^\\d+$") String id){
     return service.searchStudent(id);
@@ -63,7 +65,8 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 実行結果
    */
-  @PostMapping("/registerStudent")
+  @Operation(summary = "受講生登録", description = "受講生を登録します。")
+  @PostMapping("/students")
   public ResponseEntity<StudentDetail> registerStudent(
       @RequestBody @Valid StudentDetail studentDetail) {
     StudentDetail responseStudentDetail = service.registerStudent (studentDetail);
@@ -77,7 +80,7 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 実行結果
    */
-  @PutMapping("/updateStudent")
+  @PutMapping("/students")
   public ResponseEntity<String> updateStudent(@RequestBody @Valid StudentDetail studentDetail){
     service.updateStudent(studentDetail);
     return ResponseEntity.ok("更新処理が成功しました。");
@@ -88,7 +91,7 @@ public class StudentController {
    * @param id 削除する受講生のID
    * @return 実行結果
    */
-  @DeleteMapping("/deleteStudent/{id}")
+  @DeleteMapping("/students/{id}")
   public ResponseEntity<Void> deleteStudent(@PathVariable int id){
     if (id <= 0){
       throw new TestException("不正なIDです：" + id);
