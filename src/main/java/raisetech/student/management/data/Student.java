@@ -18,7 +18,6 @@ import org.springframework.validation.annotation.Validated;
 
 public class Student{
 
-  @NotBlank
   @Pattern(regexp = "^\\d+$")
   private String id;
 
