@@ -40,11 +40,16 @@ public class StudentController {
    * 全権検索を行うので、条件指定は行いません。
    * @return 受講生一覧（全件）
    */
-  @Operation(summary = "一覧検索", description = "受講生の一覧を検索します。")
+  @Operation(
+      summary = "受講生詳細の一覧検索",
+      description = "登録された全ての受講生詳細の一覧を検索します。"
+  )
   @GetMapping("/students")
-  public List<StudentDetail> getStudentList() throws TestException {
-    throw new TestException("例外が発生しました。");
-    //return service.searchStudentList();
+  public List<StudentDetail> getStudentList(){
+    if (service.searchStudentList().isEmpty()) {
+      throw new TestException("例外が発生しました。");
+    }
+    return service.searchStudentList();
   }
 
 
@@ -54,18 +59,26 @@ public class StudentController {
    * @param id　受講生ID
    * @return 受講生詳細
    */
-  @GetMapping("students/{id}")
+  @Operation(
+      summary = "受講生詳細検索",
+      description = "取得したIDに紐づく受講生の詳細情報を検索します。"
+  )
+  @GetMapping("/students/{id}")
   public StudentDetail getStudent(
       @PathVariable @NotBlank @Pattern(regexp = "^\\d+$") String id){
     return service.searchStudent(id);
   }
 
   /**
-   * 受講生詳細の登録を行います。
+   * 受講生詳細の新規登録を行います。
    * @param studentDetail 受講生詳細
    * @return 実行結果
    */
-  @Operation(summary = "受講生登録", description = "受講生を登録します。")
+  @Operation(
+      summary = "受講生詳細の新規登録",
+      description = "受講生の情報(ID,名前,なまえ,ニックネーム,メールアドレス,地域,年齢,性別,備考)と"
+          + "受講生のコース情報(コース名)を新規登録します。"
+  )
   @PostMapping("/students")
   public ResponseEntity<StudentDetail> registerStudent(
       @RequestBody @Valid StudentDetail studentDetail) {
@@ -80,17 +93,28 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 実行結果
    */
+  @Operation(
+      summary = "受講生詳細の更新",
+      description = "取得したIDに紐づく受講生の詳細情報を更新します。"
+          + "ここで isDeleted を true 論理削除を行うこともできます。"
+  )
   @PutMapping("/students")
   public ResponseEntity<String> updateStudent(@RequestBody @Valid StudentDetail studentDetail){
     service.updateStudent(studentDetail);
     return ResponseEntity.ok("更新処理が成功しました。");
   }
 
+
   /**
    * 受講生の物理削除
    * @param id 削除する受講生のID
    * @return 実行結果
    */
+  @Operation(
+      summary = "受講生詳細の物理削除",
+      description = "取得したIDに紐づく受講生情報を物理削除します。"
+          + "受講生のIDに紐づく受講生コース情報も自動で物理削除します。"
+  )
   @DeleteMapping("/students/{id}")
   public ResponseEntity<Void> deleteStudent(@PathVariable int id){
     if (id <= 0){
