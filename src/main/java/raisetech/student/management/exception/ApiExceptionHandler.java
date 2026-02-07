@@ -26,7 +26,7 @@ public class ApiExceptionHandler{
         .forEach(e -> errors.put(e.getField(),e.getDefaultMessage()));
 
     Map<String, Object> body = new HashMap<>();
-    body.put("Message","validation failed");
+    body.put("message","validation failed");
     body.put("errors",errors);
 
     return
