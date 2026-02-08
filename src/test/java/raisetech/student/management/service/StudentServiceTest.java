@@ -1,7 +1,9 @@
 package raisetech.student.management.service;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,7 +32,7 @@ class StudentServiceTest {
   @Mock
   private StudentConverter converter;
 
-  private  StudentService sut;
+  private StudentService sut;
 
   @BeforeEach
   void before() {
@@ -38,7 +40,7 @@ class StudentServiceTest {
   }
 
   @Test
-  void 受講生詳細の一覧検索_リポジトリとコンバーターの処理が適切に呼び出せていること(){
+  void searchStudentList_正常_リポジトリとコンバーターが呼ばれ一覧が返る() {
     List<Student> studentList = new ArrayList<>();
     List<StudentCourse> studentCourseList = new ArrayList<>();
     List<StudentDetail> expected = new ArrayList<>();
@@ -57,7 +59,51 @@ class StudentServiceTest {
   }
 
   @Test
-  void 受講生検索(){
+  void searchStudentList_students取得で例外発生_例外が伝播し後続が呼ばれない(){
+    when(repository.search()).thenThrow(new RuntimeException("DB error"));
+
+    Assertions.assertThrows(RuntimeException.class, () -> sut.searchStudentList());
+
+    verify(repository, times(1)).search();
+    verify(repository, times(0)).searchStudentCourseList();
+    verify(converter, times(0)).convertStudentDetails(any(), any());
+  }
+
+  @Test
+  void searchStudentList_courses取得で例外発生_例外が伝播しconverterが呼ばれない(){
+    List<Student> studentList = new ArrayList<>();
+    when(repository.search()).thenReturn(studentList);
+    when(repository.searchStudentCourseList()).thenThrow(new RuntimeException("DB error"));
+
+    Assertions.assertThrows(RuntimeException.class, () -> sut.searchStudentList());
+
+    verify(repository, times(1)).search();
+    verify(repository, times(1)).searchStudentCourseList();
+    verify(converter, times(0)).convertStudentDetails(any(), any());
+  }
+
+  @Test
+  void searchStudentList_converterで例外発生_例外が伝播する(){
+    List<Student> studentList = new ArrayList<>();
+    List<StudentCourse> courseList = new ArrayList<>();
+
+    when(repository.search()).thenReturn(studentList);
+    when(repository.searchStudentCourseList()).thenReturn(courseList);
+    when(converter.convertStudentDetails(studentList, courseList))
+        .thenThrow(new RuntimeException("convert error"));
+
+    Assertions.assertThrows(RuntimeException.class, () -> sut.searchStudentList());
+
+    verify(repository, times(1)).search();
+    verify(repository, times(1)).searchStudentCourseList();
+    verify(converter, times(1)).convertStudentDetails(studentList, courseList);
+  }
+
+
+
+
+  @Test
+  void searchStudent_正常_IDに紐づく受講生詳細が取得できる() {
     String id = "1";
     Student student = new Student();
     student.setId(id);
@@ -78,11 +124,50 @@ class StudentServiceTest {
   }
 
   @Test
-  void 受講生詳細の新規登録(){
+  void searchStudent_存在しないIDでstudentがnull_NullPointerExceptionが発生する() {
+    String id = "999";
+    when(repository.searchStudent(id)).thenReturn(null);
+
+    assertThrows(NullPointerException.class, () -> sut.searchStudent(id));
+
+    verify(repository, times(1)).searchStudent(id);
+    verify(repository, times(0)).searchStudentCourse(any());
+  }
+
+  @Test
+  void searchStudent_student取得で例外発生_例外が伝播しcourse取得が呼ばれない() {
+    String id = "1";
+    when(repository.searchStudent(id)).thenThrow(new RuntimeException("DB error"));
+
+    assertThrows(RuntimeException.class, () -> sut.searchStudent(id));
+
+    verify(repository, times(1)).searchStudent(id);
+    verify(repository, times(0)).searchStudentCourse(any());
+  }
+
+  @Test
+  void earchStudent_course取得で例外発生_例外が伝播する() {
+    String id = "1";
+    Student student = new Student();
+    student.setId(id);
+
+    when(repository.searchStudent(id)).thenReturn(student);
+    when(repository.searchStudentCourse(id)).thenThrow(new RuntimeException("DB error"));
+
+    assertThrows(RuntimeException.class, () -> sut.searchStudent(id));
+
+    verify(repository, times(1)).searchStudent(id);
+    verify(repository, times(1)).searchStudentCourse(id);
+
+
+  }
+
+  @Test
+  void registerStudent_正常_受講生とコースが登録できる() {
     Student student = new Student();
     StudentCourse c1 = new StudentCourse();
     StudentCourse c2 = new StudentCourse();
-    StudentDetail detail = new StudentDetail(student, List.of(c1,c2));
+    StudentDetail detail = new StudentDetail(student, List.of(c1, c2));
 
     doAnswer(inv -> {
       Student s = inv.getArgument(0);
@@ -105,7 +190,54 @@ class StudentServiceTest {
   }
 
   @Test
-  void 受講生詳細の更新(){
+  void registerStudent_コースリストがnull_NullPointerExceptionが発生する(){
+    StudentDetail detail = new StudentDetail(new Student(), null);
+
+    Assertions.assertThrows(NullPointerException.class, () -> sut.registerStudent(detail));
+
+    verify(repository, times(1)).registerStudent(any(Student.class));
+    verify(repository, times(0)).registerStudentCourse(any());
+  }
+  @Test
+  void registerStudent_student登録で例外発生_例外が伝播しcourse登録しない(){
+    Student student = new Student();
+    StudentCourse c1 = new StudentCourse();
+    StudentDetail detail = new StudentDetail(student, List.of(c1));
+
+    doAnswer(inv -> { throw new RuntimeException("DB error"); })
+        .when(repository).registerStudent(any(Student.class));
+
+    Assertions.assertThrows(RuntimeException.class, () -> sut.registerStudent(detail));
+
+    verify(repository, times(1)).registerStudent(student);
+    verify(repository, times(0)).registerStudentCourse(any());
+  }
+  @Test
+  void registerStudent_course登録で例外発生_途中で中断し例外が伝播する(){
+    Student student = new Student();
+    StudentCourse c1 = new StudentCourse();
+    StudentCourse c2 = new StudentCourse();
+    StudentDetail detail = new StudentDetail(student, List.of(c1, c2));
+
+    doAnswer(inv -> {
+      inv.getArgument(0, Student.class).setId("1");
+      return null;
+    }).when(repository).registerStudent(any(Student.class));
+
+    doAnswer(inv -> { throw new RuntimeException("insert failed"); })
+        .when(repository).registerStudentCourse(any(StudentCourse.class));
+
+    Assertions.assertThrows(RuntimeException.class, () -> sut.registerStudent(detail));
+
+    verify(repository, times(1)).registerStudent(student);
+    // forEachの途中で落ちるので最大でも1回しか呼ばれない（1件目で例外になる想定）
+    verify(repository, times(1)).registerStudentCourse(any(StudentCourse.class));
+  }
+
+
+
+  @Test
+  void updateStudent_正常_受講生とコースが更新できる() {
     Student student = new Student();
     StudentCourse c1 = new StudentCourse();
     StudentCourse c2 = new StudentCourse();
@@ -122,13 +254,77 @@ class StudentServiceTest {
     Assertions.assertTrue(called.contains(c2));
 
   }
+  @Test
+  void updateStudent_コースリストがnull_NullPointerExceptionが発生する(){
+    Student student = new Student();
+    StudentDetail detail = new StudentDetail(student, null);
+
+    Assertions.assertThrows(NullPointerException.class, () -> sut.updateStudent(detail));
+
+    verify(repository, times(1)).updateStudent(student);
+    verify(repository, times(0)).updateStudentCourse(any());
+  }
 
   @Test
-  void 受講生の物理削除_指定IDで削除される(){
+  void updateStudent_student更新で例外発生_例外が伝播しcourse更新しない(){
+    Student student = new Student();
+    StudentCourse c1 = new StudentCourse();
+    StudentDetail detail = new StudentDetail(student, List.of(c1));
+
+    doAnswer(inv -> { throw new RuntimeException("DB error"); })
+        .when(repository).updateStudent(any(Student.class));
+
+    Assertions.assertThrows(RuntimeException.class, () -> sut.updateStudent(detail));
+
+    verify(repository, times(1)).updateStudent(student);
+    verify(repository, times(0)).updateStudentCourse(any());
+  }
+
+  @Test
+  void updateStudent_course更新で例外発生_途中で中断し例外が伝播する(){
+    Student student = new Student();
+    StudentCourse c1 = new StudentCourse();
+    StudentCourse c2 = new StudentCourse();
+    StudentDetail detail = new StudentDetail(student, List.of(c1, c2));
+
+    doAnswer(inv -> { throw new RuntimeException("DB error"); })
+        .when(repository).updateStudentCourse(any(StudentCourse.class));
+
+    Assertions.assertThrows(RuntimeException.class, () -> sut.updateStudent(detail));
+
+    verify(repository, times(1)).updateStudent(student);
+    // forEachの1件目で例外になる想定なので、最大1回
+    verify(repository, times(1)).updateStudentCourse(any(StudentCourse.class));
+  }
+
+
+  @Test
+  void deleteStudent_正常_ID指定で削除できる() {
     int id = 1;
 
     sut.deleteStudent(id);
 
     verify(repository, times(1)).deleteStudent(id);
   }
+  @Test
+  void deleteStudent_repositoryで例外発生_例外が伝播する(){
+    int id = 1;
+
+    doThrow(new RuntimeException("DB error"))
+        .when(repository).deleteStudent(id);
+
+    Assertions.assertThrows(RuntimeException.class, () -> sut.deleteStudent(id));
+
+    verify(repository, times(1)).deleteStudent(id);
+  }
+  @Test
+  void deleteStudent_idが0でもrepositoryが呼ばれる_現状仕様(){
+    int id = 0;
+
+    sut.deleteStudent(id);
+
+    verify(repository, times(1)).deleteStudent(id);
+  }
+
+
 }
